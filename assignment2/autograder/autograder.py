@@ -50,6 +50,7 @@ def test_match():
         raise RuntimeError("❌ You must replace kYourName in main.cpp with your name!")
 
     student_initials = get_initials(student_name)
+    print(student_name, student_initials)
     if not student_initials:
         raise RuntimeError(f"❌ Invalid student name format: {student_name}")
 

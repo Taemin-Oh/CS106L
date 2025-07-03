@@ -13,8 +13,9 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <sstream>
 
-std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
+std::string kYourName = "SOOBIN CHAE"; // Don't forget to change this!
 
 /**
  * Takes in a file name and returns a set containing all of the applicant names as a set.
@@ -28,7 +29,17 @@ std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
  * to also change the corresponding functions in `utils.h`.
  */
 std::set<std::string> get_applicants(std::string filename) {
-  // STUDENT TODO: Implement this function.
+  std::set<std::string> data;
+  std::string name;
+  std::ifstream file;
+  file.open(filename,std::ios::in);
+  while(!file.eof())
+  {
+    getline(file, name);
+    data.insert(name);
+  }
+  file.close();
+  return data;
 }
 
 /**
@@ -39,8 +50,26 @@ std::set<std::string> get_applicants(std::string filename) {
  * @param students  The set of student names.
  * @return          A queue containing pointers to each matching name.
  */
-std::queue<const std::string*> find_matches(std::string name, std::set<std::string>& students) {
-  // STUDENT TODO: Implement this function.
+std::string get_initial(std::string name)
+{
+  std::stringstream ss(name);
+  std::string part;
+  std::string output = "";
+  while(ss >> part)
+  {
+    output = output + part[0];
+  }
+  return output;
+}
+
+ std::queue<const std::string*> find_matches(std::string name, std::set<std::string>& students) {
+  std::queue<const std::string*> data;
+  std::string initial_name = get_initial(name);
+  for(auto& elem: students)
+  {
+    if(initial_name == get_initial(elem)) data.push(&elem);
+  }
+  return data;
 }
 
 /**
@@ -54,7 +83,9 @@ std::queue<const std::string*> find_matches(std::string name, std::set<std::stri
  *                Will return "NO MATCHES FOUND." if `matches` is empty.
  */
 std::string get_match(std::queue<const std::string*>& matches) {
-  // STUDENT TODO: Implement this function.
+  if(matches.empty()) return "NO MATCHES FOUND.";
+  std::string output = *(matches.front());
+  return output;
 }
 
 /* #### Please don't remove this line! #### */

@@ -1,14 +1,3 @@
-/*
- * CS106L Assignment 1: SimpleEnroll
- * Created by Fabio Ibanez with modifications by Jacob Roberts-Baca.
- *
- * Welcome to Assignment 1 of CS106L! Please complete each STUDENT TODO
- * in this file. You do not need to modify any other files.
- *
- * Students must implement: parse_csv, write_courses_offered,
- * write_courses_not_offered
- */
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -19,30 +8,13 @@
 const std::string COURSES_OFFERED_PATH = "student_output/courses_offered.csv";
 const std::string COURSES_NOT_OFFERED_PATH = "student_output/courses_not_offered.csv";
 
-/**
- * Represents a course a student can take in ExploreCourses.
- * You must fill in the types of the fields in this struct.
- * Hint: Remember what types C++ streams work with?!
- */
+
 struct Course {
-  /* STUDENT TODO */ title;
-  /* STUDENT TODO */ number_of_units;
-  /* STUDENT TODO */ quarter;
+  std::string title;
+  std::string number_of_units;
+  std::string quarter;
 };
 
-/**
- * (STUDENT TODO) Look at how the main function (at the bottom of this file)
- * calls `parse_csv`, `write_courses_offered`, and `write_courses_not_offered`.
- * Modify the signatures of these functions so that they work as intended, and then delete this
- * comment!
- */
-
-/**
- * Note:
- * We need to #include utils.cpp _after_ we declare the Course struct above
- * so that the code inside utils.cpp knows what a Course is.
- * Recall that #include literally copies and pastes file contents.
- */
 #include "utils.cpp"
 
 /**
@@ -58,8 +30,19 @@ struct Course {
  * @param filename The name of the file to parse.
  * @param courses  A vector of courses to populate.
  */
-void parse_csv(std::string filename, std::vector<Course> courses) {
-  /* (STUDENT TODO) Your code goes here... */
+void parse_csv(std::string filename, std::vector<Course>& courses) {
+  std::fstream input_file;
+  std::string tmp;
+  input_file.open(filename, std::ios::in);
+  getline(input_file,tmp);
+  while(!input_file.eof())
+  {
+    getline(input_file,tmp);
+    auto tmp_vector = split(tmp, ',');
+    Course mem{tmp_vector[0], tmp_vector[1], tmp_vector[2]};
+    courses.push_back(mem);
+  }
+  input_file.close();
 }
 
 /**
@@ -80,8 +63,19 @@ void parse_csv(std::string filename, std::vector<Course> courses) {
  * @param all_courses A vector of all courses gotten by calling `parse_csv`.
  *                    This vector will be modified by removing all offered courses.
  */
-void write_courses_offered(std::vector<Course> all_courses) {
-  /* (STUDENT TODO) Your code goes here... */
+void write_courses_offered(std::vector<Course>& all_courses) {
+  std::fstream output_file;
+  output_file.open(COURSES_OFFERED_PATH, std::ios::out);
+  output_file<<"Title,Number of Units,Quarter"<<std::endl;
+  for(auto elem: all_courses)
+  {
+    if(elem.quarter!="null")
+    {
+      output_file<<elem.title<<","<<elem.number_of_units<<","<<elem.quarter<<std::endl;
+    }
+  }
+  all_courses.erase(std::remove_if(all_courses.begin(),all_courses.end(),[](Course x) {return x.quarter!="null";}), all_courses.end());
+  output_file.close();
 }
 
 /**
@@ -98,7 +92,14 @@ void write_courses_offered(std::vector<Course> all_courses) {
  * @param unlisted_courses A vector of courses that are not offered.
  */
 void write_courses_not_offered(std::vector<Course> unlisted_courses) {
-  /* (STUDENT TODO) Your code goes here... */
+  std::fstream output_file;
+  output_file.open(COURSES_NOT_OFFERED_PATH, std::ios::out);
+  output_file<<"Title,Number of Units,Quarter"<<std::endl;
+  for(auto elem: unlisted_courses)
+  {
+    output_file<<elem.title<<","<<elem.number_of_units<<","<<elem.quarter<<std::endl;
+  }
+  output_file.close();
 }
 
 int main() {
@@ -107,9 +108,6 @@ int main() {
 
   std::vector<Course> courses;
   parse_csv("courses.csv", courses);
-
-  /* Uncomment for debugging... */
-  // print_courses(courses);
 
   write_courses_offered(courses);
   write_courses_not_offered(courses);
